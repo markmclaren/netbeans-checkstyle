@@ -1,83 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">    
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>cz.sickboy</groupId>
-    <artifactId>netbeans-checkstyle</artifactId>
-    <packaging>pom</packaging>
-    <version>3.4.0</version>
-    <name>netbeans-checkstyle</name>
-    <url>http://www.sickboy.cz/checkstyle</url>
-    <description>
-        Checkstyle Beans project contains the set of plugins
-        needed for annotation of the code that does not match the defined rules.
-        It works inside the editor, displaying the results as soon as the edited
-        file is saved.
-    </description>
-    
-    <licenses>
-        <license>
-            <name>GNU LGPL, Version 2.1</name>
-            <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
-            <distribution>manual</distribution>
-        </license>
-    </licenses>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>cz.sickboy</groupId>
+  <artifactId>netbeans-checkstyle</artifactId>
+  <packaging>pom</packaging>
+  <version>3.4.0</version>
+  <name>netbeans-checkstyle</name>
+  <url>http://www.sickboy.cz/checkstyle</url>
+  <description>
+    Checkstyle Beans project contains the set of plugins
+    needed for annotation of the code that does not match the defined rules.
+    It works inside the editor, displaying the results as soon as the edited
+    file is saved.
+  </description>
 
-    <developers>
-        <developer>
-            <id>sickboy</id>
-            <name>Petr Hejl</name>
-            <email>hejlp@seznam.cz</email>
-            <roles>
-                <role>Project Manager</role>
-                <role>Architect</role>
-                <role>Developer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
-    
-    <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.4</version>
-            </extension>
-        </extensions>
-    </build>
+  <licenses>
+    <license>
+      <name>GNU LGPL, Version 2.1</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <developers>
+    <developer>
+      <id>sickboy</id>
+      <name>Petr Hejl</name>
+      <email>hejlp@seznam.cz</email>
+      <roles>
+        <role>Project Manager</role>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
 
-    <scm>
-        <connection>scm:hg:https://bitbucket.org/phejl/checkstyle-beans</connection>
-        <url>https://bitbucket.org/phejl/checkstyle-beans</url>
-    </scm>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.puppycrawl.tools</groupId>
+        <artifactId>checkstyle</artifactId>
+        <version>6.6</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>repository</id>
-            <url>scpexe://sickboy.cz/home/sickboy/www/repository</url>
-        </repository>
-        <site>
-            <id>website</id>
-            <url>scpexe://sickboy.cz/home/sickboy/www/checkstyle</url>
-        </site>
-    </distributionManagement>
-    
-    <modules>
-        <module>netbeans-checkstyle-library</module>
-        <module>netbeans-checkstyle-plugin</module>
-        <module>netbeans-checkstyle-extra</module>
-        <module>netbeans-checkstyle-distribution</module>
-    </modules>
-    <repositories>
-        <repository>
-            <id>netbeans</id>
-            <name>NetBeans artifacts</name>
-            <url>http://bits.netbeans.org/maven2/</url>
-        </repository>
-    </repositories>
-    
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.4</version>
+      </extension>
+    </extensions>
+  </build>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <scm>
+    <connection>scm:hg:https://bitbucket.org/phejl/checkstyle-beans</connection>
+    <url>https://bitbucket.org/phejl/checkstyle-beans</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>repository</id>
+      <url>scpexe://sickboy.cz/home/sickboy/www/repository</url>
+    </repository>
+    <site>
+      <id>website</id>
+      <url>scpexe://sickboy.cz/home/sickboy/www/checkstyle</url>
+    </site>
+  </distributionManagement>
+
+  <modules>
+    <module>netbeans-checkstyle-library</module>
+    <module>netbeans-checkstyle-plugin</module>
+    <module>netbeans-checkstyle-extra</module>
+    <module>netbeans-checkstyle-distribution</module>
+  </modules>
+  <repositories>
+    <repository>
+      <id>netbeans</id>
+      <name>NetBeans artifacts</name>
+      <url>http://bits.netbeans.org/maven2/</url>
+    </repository>
+  </repositories>
+
 </project>
