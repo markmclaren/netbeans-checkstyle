@@ -20,7 +20,7 @@
     </fileSet>
     
     <fileSet>
-      <directory>netbeans-checkstyle-library</directory>
+      <directory>../netbeans-checkstyle-library</directory>
       <includes>
         <include>src/**</include>
         <include>LICENSE*</include>
@@ -30,7 +30,7 @@
     </fileSet>
     
     <fileSet>
-      <directory>netbeans-checkstyle-plugin</directory>
+      <directory>../netbeans-checkstyle-plugin</directory>
       <includes>
         <include>src/**</include>
         <include>LICENSE*</include>
@@ -40,7 +40,7 @@
     </fileSet>
 
     <fileSet>
-      <directory>netbeans-checkstyle-extra</directory>
+      <directory>../netbeans-checkstyle-extra</directory>
       <includes>
         <include>src/**</include>
         <include>LICENSE*</include>

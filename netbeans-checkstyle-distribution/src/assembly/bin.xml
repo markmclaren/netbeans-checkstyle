@@ -7,10 +7,26 @@
     <format>zip</format>
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory> 
+  
+    <moduleSets>
+        <moduleSet>
+            <includes>
+                <include>cz.sickboy:netbeans-checkstyle-plugin</include>
+            </includes>
+            <binaries />
+        </moduleSet>
+        <moduleSet>
+            <includes>
+                <include>cz.sickboy:netbeans-checkstyle-library</include>
+            </includes>
+            <binaries />
+        </moduleSet>
+    </moduleSets>
+	
   <fileSets>
       
     <fileSet>
-      <directory>netbeans-checkstyle-library/target</directory>
+      <directory>../netbeans-checkstyle-library/target</directory>
       <outputDirectory></outputDirectory>
       <includes>
         <include>*.nbm</include>
@@ -18,7 +34,7 @@
     </fileSet>
     
     <fileSet>
-      <directory>netbeans-checkstyle-plugin/target</directory>
+      <directory>../netbeans-checkstyle-plugin/target</directory>
       <outputDirectory></outputDirectory>
       <includes>
         <include>*.nbm</include>
