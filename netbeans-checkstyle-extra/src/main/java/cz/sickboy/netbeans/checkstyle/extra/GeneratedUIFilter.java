@@ -18,13 +18,6 @@
  */
 package cz.sickboy.netbeans.checkstyle.extra;
 
-import com.puppycrawl.tools.checkstyle.api.AuditEvent;
-import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
-import com.puppycrawl.tools.checkstyle.api.FileContents;
-import com.puppycrawl.tools.checkstyle.api.Filter;
-import com.puppycrawl.tools.checkstyle.api.TextBlock;
-import com.puppycrawl.tools.checkstyle.api.Utils;
-import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +29,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.puppycrawl.tools.checkstyle.Utils;
+import com.puppycrawl.tools.checkstyle.api.AuditEvent;
+import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
+import com.puppycrawl.tools.checkstyle.api.FileContents;
+import com.puppycrawl.tools.checkstyle.api.Filter;
+import com.puppycrawl.tools.checkstyle.api.TextBlock;
+import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
+
 /**
  *
  * @author Petr.Hejl
@@ -43,13 +44,13 @@ import java.util.regex.Pattern;
 public class GeneratedUIFilter extends AutomaticBean implements Filter {
 
     private static final Pattern BLOCK_ON_PATTERN =
-            Utils.getPattern("GEN-END\\:"); // NOI18N
+            Utils.createPattern("GEN-END\\:"); // NOI18N
 
     private static final Pattern BLOCK_OFF_PATTERN =
-            Utils.getPattern("GEN-BEGIN\\:"); // NOI18N
+            Utils.createPattern("GEN-BEGIN\\:"); // NOI18N
 
     private static final Pattern[] ONE_LINE_PATTERNS =
-            new Pattern[] {Utils.getPattern("GEN-FIRST\\:"), Utils.getPattern("GEN-LAST\\:")}; // NOI18N
+            new Pattern[] {Utils.createPattern("GEN-FIRST\\:"), Utils.createPattern("GEN-LAST\\:")}; // NOI18N
 
     private final List<SectionTag> sectionTags = new ArrayList<SectionTag>();
 

@@ -18,6 +18,13 @@
  */
 package cz.sickboy.netbeans.checkstyle;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import com.puppycrawl.tools.checkstyle.Checker;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
@@ -26,11 +33,6 @@ import com.puppycrawl.tools.checkstyle.api.FileSetCheck;
 import com.puppycrawl.tools.checkstyle.api.LocalizedMessage;
 import com.puppycrawl.tools.checkstyle.api.MessageDispatcher;
 import cz.sickboy.netbeans.checkstyle.editor.CheckstyleTask;
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
 
 /**
  * The checkstyle checker that calls for the cancel status of the
@@ -115,7 +117,7 @@ public class CancellableChecker extends Checker {
             check.setMessageDispatcher(dispatcher);
         }
 
-        public TreeSet<LocalizedMessage> process(File file, List<String> lines) {
+        public SortedSet<LocalizedMessage> process(File file, List<String> lines) {
             if (hook.isCanceled()) {
                 return EMPTY_SET;
             }
