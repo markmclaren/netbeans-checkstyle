@@ -1,5 +1,7 @@
+# WORK IN PROGRESS
+
 # netbeans-checkstyle
-fork of http://www.sickboy.cz/checkstyle/download.html to work with v6.1.1 of checkstyle and netbeans 8
+fork of http://www.sickboy.cz/checkstyle/download.html to work with v6.6 of checkstyle and netbeans 8
 
 # Building
 
