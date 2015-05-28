@@ -30,6 +30,20 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
         <extensions>true</extensions>
+        <configuration>
+          <moduleType>autoload</moduleType>
+          <codeNameBase>cz.sickboy.netbeans.libs.checkstyle</codeNameBase>
+          <cluster>checkstyle</cluster>
+          <author>Petr Hejl</author>
+          <manifest>src/main/nbm/manifest.mf</manifest>
+          <distributionUrl>http://www.sickboy.cz/checkstyle</distributionUrl>
+          <licenseName>GNU LGPL, Version 2.1 and Apache License, Version 2.0</licenseName>
+          <licenseFile>LICENSE.txt</licenseFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
