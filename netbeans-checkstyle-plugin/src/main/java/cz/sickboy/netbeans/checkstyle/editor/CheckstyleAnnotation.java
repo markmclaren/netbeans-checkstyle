@@ -18,9 +18,10 @@
  */
 package cz.sickboy.netbeans.checkstyle.editor;
 
-import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
 import javax.swing.text.Position;
 import javax.swing.text.StyledDocument;
+
+import com.puppycrawl.tools.checkstyle.api.SeverityLevel;
 import org.openide.text.Annotation;
 import org.openide.text.NbDocument;
 
@@ -30,37 +31,45 @@ import org.openide.text.NbDocument;
  */
 public final class CheckstyleAnnotation extends Annotation {
 
-    private final StyledDocument document;
+  private final StyledDocument document;
 
-    private final Position position;
+  private final Position position;
 
-    private final String shortDescription;
+  private final String shortDescription;
 
-    private final SeverityLevel level;
+  private final SeverityLevel level;
 
-    public CheckstyleAnnotation(StyledDocument document, Position position,
-            String shortDescription, SeverityLevel level) {
+  public CheckstyleAnnotation(StyledDocument document, Position position,
+                              String shortDescription, SeverityLevel level) {
 
-        this.document = document;
-        this.position = position;
-        this.shortDescription = shortDescription;
-        this.level = level;
-    }
+    this.document = document;
+    this.position = position;
+    this.shortDescription = shortDescription;
+    this.level = level;
+  }
 
-    public String getAnnotationType() {
-        return "cz-sickboy-netbeans-checkstyle-resources-checkstyle-annotation"; // NOI18N
-    }
+  public String getAnnotationType() {
+    return "cz-sickboy-netbeans-checkstyle-resources-checkstyle-annotation"; // NOI18N
+  }
 
-    public void documentAttach() {
-        NbDocument.addAnnotation(document, position, -1, this);
-    }
+  public void documentAttach() {
+    //NbDocument.addAnnotation(document, position, -1, this);
+    NbDocument.addAnnotation(document, position, getEndOfLine() - position.getOffset(), this);
+  }
 
-    public void documentDetach() {
-        NbDocument.removeAnnotation(document, this);
-    }
+  public void documentDetach() {
+    NbDocument.removeAnnotation(document, this);
+  }
 
-    public String getShortDescription() {
-        return shortDescription;
-    }
+  public String getShortDescription() {
+    return shortDescription;
+  }
+
+  private int getEndOfLine() {
+
+    int lineNumber = NbDocument.findLineNumber(document, position.getOffset());
+    int nextLineOffset = NbDocument.findLineOffset(document, lineNumber + 1);
+    return nextLineOffset - 1;
+  }
 
 }
