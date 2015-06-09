@@ -29,12 +29,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.puppycrawl.tools.checkstyle.Utils;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AutomaticBean;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.Filter;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
+import com.puppycrawl.tools.checkstyle.api.Utils;
 import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
 
 /**
@@ -43,151 +43,150 @@ import com.puppycrawl.tools.checkstyle.checks.FileContentsHolder;
  */
 public class GeneratedUIFilter extends AutomaticBean implements Filter {
 
-    private static final Pattern BLOCK_ON_PATTERN =
-            Utils.createPattern("GEN-END\\:"); // NOI18N
+  private static final Pattern BLOCK_ON_PATTERN
+    = Utils.createPattern("GEN-END\\:"); // NOI18N
 
-    private static final Pattern BLOCK_OFF_PATTERN =
-            Utils.createPattern("GEN-BEGIN\\:"); // NOI18N
+  private static final Pattern BLOCK_OFF_PATTERN
+    = Utils.createPattern("GEN-BEGIN\\:"); // NOI18N
 
-    private static final Pattern[] ONE_LINE_PATTERNS =
-            new Pattern[] {Utils.createPattern("GEN-FIRST\\:"), Utils.createPattern("GEN-LAST\\:")}; // NOI18N
+  private static final Pattern[] ONE_LINE_PATTERNS
+    = new Pattern[] { Utils.createPattern("GEN-FIRST\\:"), Utils.createPattern("GEN-LAST\\:") }; // NOI18N
 
-    private final List<SectionTag> sectionTags = new ArrayList<SectionTag>();
+  private final List<SectionTag> sectionTags = new ArrayList<SectionTag>();
 
-    private final Set<Integer> ignoredLines = new HashSet<Integer>();
+  private final Set<Integer> ignoredLines = new HashSet<Integer>();
 
-    /**
-     * References the current FileContents for this filter.
-     * Since this is a weak reference to the FileContents, the FileContents
-     * can be reclaimed as soon as the strong references in TreeWalker
-     * and FileContentsHolder are reassigned to the next FileContents,
-     * at which time filtering for the current FileContents is finished.
-     */
-    private WeakReference<FileContents> fileContentsReference = new WeakReference<FileContents>(null);
+  /**
+   * References the current FileContents for this filter. Since this is a weak reference to the
+   * FileContents, the FileContents can be reclaimed as soon as the strong references in TreeWalker
+   * and FileContentsHolder are reassigned to the next FileContents, at which time filtering for the
+   * current FileContents is finished.
+   */
+  private WeakReference<FileContents> fileContentsReference = new WeakReference<FileContents>(null);
 
-    public GeneratedUIFilter() {
-        super();
+  public GeneratedUIFilter() {
+    super();
+  }
+
+  public FileContents getFileContents() {
+    return fileContentsReference.get();
+  }
+
+  public void setFileContents(FileContents aFileContents) {
+    fileContentsReference = new WeakReference<FileContents>(aFileContents);
+  }
+
+  public boolean accept(AuditEvent aEvent) {
+    if (aEvent.getLocalizedMessage() == null) {
+      return true; // special event
     }
 
-    public FileContents getFileContents() {
-        return fileContentsReference.get();
+    FileContents currentContents = FileContentsHolder.getContents();
+    if (currentContents == null) {
+      return true;
     }
 
-    public void setFileContents(FileContents aFileContents) {
-        fileContentsReference = new WeakReference<FileContents>(aFileContents);
+    if (getFileContents() != currentContents) {
+      setFileContents(currentContents);
+      tagComments();
     }
 
-    public boolean accept(AuditEvent aEvent) {
-        if (aEvent.getLocalizedMessage() == null) {
-            return true; // special event
-        }
-
-        FileContents currentContents = FileContentsHolder.getContents();
-        if (currentContents == null) {
-            return true;
-        }
-
-        if (getFileContents() != currentContents) {
-            setFileContents(currentContents);
-            tagComments();
-        }
-
-        if (ignoredLines.contains(aEvent.getLine())) {
-            return false;
-        }
-
-        SectionTag matchTag = findPreceedingTag(aEvent);
-        if (matchTag != null && !matchTag.isBegin()) {
-            return false;
-        }
-        return true;
+    if (ignoredLines.contains(aEvent.getLine())) {
+      return false;
     }
 
-    private SectionTag findPreceedingTag(AuditEvent aEvent) {
-        SectionTag result = null;
-        for (SectionTag tag : sectionTags) {
-            if ((tag.getLine() > aEvent.getLine())
-                    || (tag.getLine() == aEvent.getLine() && tag.isBegin())) {
-                break;
-            }
-            result = tag;
-        }
-        return result;
+    SectionTag matchTag = findPreceedingTag(aEvent);
+    if (matchTag != null && !matchTag.isBegin()) {
+      return false;
+    }
+    return true;
+  }
+
+  private SectionTag findPreceedingTag(AuditEvent aEvent) {
+    SectionTag result = null;
+    for (SectionTag tag : sectionTags) {
+      if ((tag.getLine() > aEvent.getLine())
+        || (tag.getLine() == aEvent.getLine() && tag.isBegin())) {
+        break;
+      }
+      result = tag;
+    }
+    return result;
+  }
+
+  private void tagComments() {
+    sectionTags.clear();
+    Collection comments = getFileContents().getCppComments().values();
+
+    for (Iterator iter = comments.iterator(); iter.hasNext();) {
+      TextBlock comment = (TextBlock) iter.next();
+      String[] text = comment.getText();
+      for (int i = 0, startLineNo = comment.getStartLineNo(); i < text.length; i++) {
+        tagCommentLine(text[i], startLineNo + i);
+      }
     }
 
-    private void tagComments() {
-        sectionTags.clear();
-        Collection comments = getFileContents().getCppComments().values();
+    Collections.sort(sectionTags);
+  }
 
-        for (Iterator iter = comments.iterator(); iter.hasNext();) {
-            TextBlock comment = (TextBlock) iter.next();
-            String[] text = comment.getText();
-            for (int i = 0, startLineNo = comment.getStartLineNo(); i < text.length; i++) {
-                tagCommentLine(text[i], startLineNo + i);
-            }
-        }
-
-        Collections.sort(sectionTags);
+  private void tagCommentLine(String commentText, int lineNumber) {
+    Matcher offMatcher = BLOCK_OFF_PATTERN.matcher(commentText);
+    if (offMatcher.find()) {
+      sectionTags.add(new SectionTag(lineNumber, false));
+      return;
+    }
+    Matcher onMatcher = BLOCK_ON_PATTERN.matcher(commentText);
+    if (onMatcher.find()) {
+      sectionTags.add(new SectionTag(lineNumber, true));
+      return;
     }
 
-    private void tagCommentLine(String commentText, int lineNumber) {
-        Matcher offMatcher = BLOCK_OFF_PATTERN.matcher(commentText);
-        if (offMatcher.find()) {
-            sectionTags.add(new SectionTag(lineNumber, false));
-            return;
-        }
-        Matcher onMatcher = BLOCK_ON_PATTERN.matcher(commentText);
-        if (onMatcher.find()) {
-            sectionTags.add(new SectionTag(lineNumber, true));
-            return;
-        }
+    for (Pattern oneLinePattern : ONE_LINE_PATTERNS) {
+      Matcher matcher = oneLinePattern.matcher(commentText);
+      if (matcher.find()) {
+        ignoredLines.add(lineNumber);
+        break;
+      }
+    }
+  }
 
-        for (Pattern oneLinePattern : ONE_LINE_PATTERNS) {
-            Matcher matcher = oneLinePattern.matcher(commentText);
-            if (matcher.find()) {
-                ignoredLines.add(lineNumber);
-                break;
-            }
-        }
+  private static class SectionTag implements Comparable<SectionTag> {
+
+    private final int line;
+
+    private final boolean begin;
+
+    public SectionTag(int line, boolean begin) {
+      this.line = line;
+      this.begin = begin;
     }
 
-    private static class SectionTag implements Comparable<SectionTag> {
-
-        private final int line;
-
-        private final boolean begin;
-
-        public SectionTag(int line, boolean begin) {
-            this.line = line;
-            this.begin = begin;
-        }
-
-        public int getLine() {
-            return line;
-        }
-
-        public boolean isBegin() {
-            return begin;
-        }
-
-        public int compareTo(SectionTag other) {
-            return line - other.getLine();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof SectionTag)) {
-                return false;
-            }
-            return line == ((SectionTag) obj).getLine();
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 59 * hash + this.line;
-            return hash;
-        }
-
+    public int getLine() {
+      return line;
     }
+
+    public boolean isBegin() {
+      return begin;
+    }
+
+    public int compareTo(SectionTag other) {
+      return line - other.getLine();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof SectionTag)) {
+        return false;
+      }
+      return line == ((SectionTag) obj).getLine();
+    }
+
+    @Override
+    public int hashCode() {
+      int hash = 7;
+      hash = 59 * hash + this.line;
+      return hash;
+    }
+
+  }
 }
