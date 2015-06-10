@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.puppycrawl.tools.checkstyle.Checker;
@@ -35,109 +34,112 @@ import com.puppycrawl.tools.checkstyle.api.MessageDispatcher;
 import cz.sickboy.netbeans.checkstyle.editor.CheckstyleTask;
 
 /**
- * The checkstyle checker that calls for the cancel status of the
- * {@link CheckstyleTask} and cancel itself if the task is cancelled.
+ * The checkstyle checker that calls for the cancel status of the {@link CheckstyleTask} and cancel
+ * itself if the task is cancelled.
  *
  * @author Petr Hejl
  * @see CheckstyleTask
  */
 public class CancellableChecker extends Checker {
 
-    private static final TreeSet<LocalizedMessage> EMPTY_SET = new TreeSet<LocalizedMessage>() {
+  private static final TreeSet<LocalizedMessage> EMPTY_SET = new TreeSet<LocalizedMessage>() {
 
-        @Override
-        public boolean add(LocalizedMessage e) {
-            throw new UnsupportedOperationException("Read only set");
-        }
+    @Override
+    public boolean add(LocalizedMessage e) {
+      throw new UnsupportedOperationException("Read only set");
+    }
 
-        @Override
-        public boolean addAll(Collection<? extends LocalizedMessage> c) {
-            throw new UnsupportedOperationException("Read only set");
-        }
-    };
+    @Override
+    public boolean addAll(Collection<? extends LocalizedMessage> c) {
+      throw new UnsupportedOperationException("Read only set");
+    }
+
+  };
+
+  private final CancellationHook hook;
+
+  /**
+   * Contructs the checker that won't do any checks whenewer the task has cancelled status set to
+   * <code>true</code>.
+   *
+   * @param task the task that will be consulted for the cancellation
+   *
+   * @throws CheckstyleException if any problem with initialization occurs
+   */
+  public CancellableChecker(CancellationHook hook) throws CheckstyleException {
+    this.hook = hook;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addFileSetCheck(FileSetCheck fileSetCheck) {
+    super.addFileSetCheck(new CancellableFileSetCheck(fileSetCheck, hook));
+  }
+
+  /**
+   * Checks the given file.
+   *
+   * @param file file to check
+   *
+   * @see Checker#process(File[])
+   */
+  public void process(File file) {
+    process(Collections.singletonList(file));
+  }
+
+  public static interface CancellationHook {
+
+    boolean isCanceled();
+
+  }
+
+  private static class CancellableFileSetCheck implements FileSetCheck {
+
+    private final FileSetCheck check;
 
     private final CancellationHook hook;
 
-    /**
-     * Contructs the checker that won't do any checks whenewer the task has cancelled
-     * status set to <code>true</code>.
-     *
-     * @param task the task that will be consulted for the cancellation
-     * @throws CheckstyleException if any problem with initialization occurs
-     */
-    public CancellableChecker(CancellationHook hook) throws CheckstyleException {
-        this.hook = hook;
+    public CancellableFileSetCheck(FileSetCheck check, CancellationHook hook) {
+      this.check = check;
+      this.hook = hook;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addFileSetCheck(FileSetCheck fileSetCheck) {
-        super.addFileSetCheck(new CancellableFileSetCheck(fileSetCheck, hook));
+    public void contextualize(Context context) throws CheckstyleException {
+      check.contextualize(context);
     }
 
-    /**
-     * Checks the given file.
-     *
-     * @param file file to check
-     * @see Checker#process(File[])
-     */
-    public void process(File file) {
-        process(Collections.singletonList(file));
+    public void configure(Configuration configuration) throws CheckstyleException {
+      check.configure(configuration);
     }
 
-    public static interface CancellationHook {
-
-        boolean isCanceled();
-
+    public void setMessageDispatcher(MessageDispatcher dispatcher) {
+      check.setMessageDispatcher(dispatcher);
     }
 
-    private static class CancellableFileSetCheck implements FileSetCheck {
+    public TreeSet<LocalizedMessage> process(File file, List<String> lines) {
+      if (hook.isCanceled()) {
+        return EMPTY_SET;
+      }
+      return new TreeSet<LocalizedMessage>(check.process(file, lines));
+    }
 
-        private final FileSetCheck check;
+    public void init() {
+      check.init();
+    }
 
-        private final CancellationHook hook;
+    public void finishProcessing() {
+      check.finishProcessing();
+    }
 
-        public CancellableFileSetCheck(FileSetCheck check, CancellationHook hook) {
-            this.check = check;
-            this.hook = hook;
-        }
+    public void destroy() {
+      check.destroy();
+    }
 
-        public void contextualize(Context context) throws CheckstyleException {
-            check.contextualize(context);
-        }
+    public void beginProcessing(String charset) {
+      check.beginProcessing(charset);
+    }
 
-        public void configure(Configuration configuration) throws CheckstyleException {
-            check.configure(configuration);
-        }
-
-        public void setMessageDispatcher(MessageDispatcher dispatcher) {
-            check.setMessageDispatcher(dispatcher);
-        }
-
-        public SortedSet<LocalizedMessage> process(File file, List<String> lines) {
-            if (hook.isCanceled()) {
-                return EMPTY_SET;
-            }
-            return check.process(file, lines);
-        }
-
-        public void init() {
-            check.init();
-        }
-
-        public void finishProcessing() {
-            check.finishProcessing();
-        }
-
-        public void destroy() {
-            check.destroy();
-        }
-
-        public void beginProcessing(String charset) {
-            check.beginProcessing(charset);
-        }
-     }
+  }
 }
